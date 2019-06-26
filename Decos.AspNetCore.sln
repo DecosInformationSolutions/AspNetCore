@@ -3,9 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28721.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.BackgroundTasks", "Decos.AspNetCore.BackgroundTasks\Decos.AspNetCore.BackgroundTasks.csproj", "{E8424527-22C3-4494-9A5F-E8606FAABE30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decos.AspNetCore.BackgroundTasks", "Decos.AspNetCore.BackgroundTasks\Decos.AspNetCore.BackgroundTasks.csproj", "{E8424527-22C3-4494-9A5F-E8606FAABE30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.BackgroundTasks.Tests", "Decos.AspNetCore.BackgroundTasks.Tests\Decos.AspNetCore.BackgroundTasks.Tests.csproj", "{A8C362C2-A494-4FCB-9708-ACB624207321}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decos.AspNetCore.BackgroundTasks.Tests", "Decos.AspNetCore.BackgroundTasks.Tests\Decos.AspNetCore.BackgroundTasks.Tests.csproj", "{A8C362C2-A494-4FCB-9708-ACB624207321}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web", "Microsoft.Identity.Web\Microsoft.Identity.Web.csproj", "{953AFC16-BE35-4E51-960A-9D8D9C3A619A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.Test", "Microsoft.Identity.Web.Test\Microsoft.Identity.Web.Test.csproj", "{667F229D-BA79-4449-96F6-84E8FE65F27F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.SqlTokenCacheProviders", "Microsoft.Identity.Web.Sql\Microsoft.Identity.Web.SqlTokenCacheProviders.csproj", "{F5F035EE-2F4B-4716-B488-7A222270ACD0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decos.AspNetCore.Authorization", "Decos.AspNetCore.Authorization\Decos.AspNetCore.Authorization.csproj", "{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.Authorization.Tests", "Decos.AspNetCore.Authorization.Tests\Decos.AspNetCore.Authorization.Tests.csproj", "{7B41C960-3AAC-4C30-89FB-C88606E14FCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,26 @@ Global
 		{A8C362C2-A494-4FCB-9708-ACB624207321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8C362C2-A494-4FCB-9708-ACB624207321}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8C362C2-A494-4FCB-9708-ACB624207321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{953AFC16-BE35-4E51-960A-9D8D9C3A619A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{953AFC16-BE35-4E51-960A-9D8D9C3A619A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{953AFC16-BE35-4E51-960A-9D8D9C3A619A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{953AFC16-BE35-4E51-960A-9D8D9C3A619A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{667F229D-BA79-4449-96F6-84E8FE65F27F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{667F229D-BA79-4449-96F6-84E8FE65F27F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{667F229D-BA79-4449-96F6-84E8FE65F27F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{667F229D-BA79-4449-96F6-84E8FE65F27F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5F035EE-2F4B-4716-B488-7A222270ACD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5F035EE-2F4B-4716-B488-7A222270ACD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5F035EE-2F4B-4716-B488-7A222270ACD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5F035EE-2F4B-4716-B488-7A222270ACD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
