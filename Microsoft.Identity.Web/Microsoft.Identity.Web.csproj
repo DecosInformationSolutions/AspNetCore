@@ -12,7 +12,7 @@
     <Company>Decos Information Solutions</Company>
     <Product>Decos.Microsoft.Identity.Web</Product>
     <Description>Provides the Microsoft.Identity.Web code as available on https://github.com/Azure-Samples/active-directory-dotnet-native-aspnetcore-v2 as a NuGet package. For the SQL token cache providers, see the Decos.Microsoft.Identity.Web.SqlTokenCacheProviders package.</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

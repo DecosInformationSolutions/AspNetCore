@@ -9,7 +9,7 @@
     <Authors>Laura Verdoes</Authors>
     <Company>Decos Information Solutions</Company>
     <Description>Provides additional authorization functionality to ASP.NET Core, such as adding group claims based on a Graph API call.</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
