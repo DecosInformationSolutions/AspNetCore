@@ -5,9 +5,12 @@
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>Laura Verdoes</Authors>
     <Company>Decos Information Solutions</Company>
     <Description>ASP.NET Core implementation of QueueBackgroundWorkItem as provided by https://github.com/aspnet/Extensions/issues/805</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
