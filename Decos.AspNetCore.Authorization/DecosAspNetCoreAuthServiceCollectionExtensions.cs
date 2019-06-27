@@ -30,6 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The <see cref="IServiceCollection"/> instance.</returns>
         public static IServiceCollection AddGraphApiClaims(this IServiceCollection services, Action<GraphApiClaimsOptions> configureOptions)
         {
+            services.AddMemoryCache();
             services.TryAddScoped<IGraphApiClaimsHandler, GraphApiClaimsHandler>();
             services.TryAddScoped<IGraphApiClient, GraphApiClient>();
             services.Configure(configureOptions);

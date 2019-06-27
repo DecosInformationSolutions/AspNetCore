@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Client;
+using Microsoft.Identity.Web.Resource;
 
 namespace Decos.AspNetCore.Authorization.GraphApi
 {
@@ -18,6 +23,7 @@ namespace Decos.AspNetCore.Authorization.GraphApi
     {
         private readonly ITokenAcquisition _tokenAcquisition;
         private readonly IGraphApiClient _graphApiClient;
+        private readonly IMemoryCache _cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphApiClaimsHandler"/> class with the
@@ -26,14 +32,17 @@ namespace Decos.AspNetCore.Authorization.GraphApi
         /// <param name="tokenAcquisition">
         /// Defines a method for acquiring a new token to authenticate Graph API requests.
         /// </param>
+        /// <param name="graphApiClient">A client used to access the Graph API.</param>
+        /// <param name="cache">A cache to temporarily store Graph API results in.</param>
         /// <param name="options">Provides options used to control the Graph API claims.</param>
-        public GraphApiClaimsHandler(ITokenAcquisition tokenAcquisition, IGraphApiClient graphApiClient, IOptions<GraphApiClaimsOptions> options)
+        public GraphApiClaimsHandler(ITokenAcquisition tokenAcquisition, IGraphApiClient graphApiClient, IMemoryCache cache, IOptions<GraphApiClaimsOptions> options)
         {
             if (tokenAcquisition == null)
                 throw new ArgumentNullException(nameof(tokenAcquisition));
 
             _tokenAcquisition = tokenAcquisition;
             _graphApiClient = graphApiClient;
+            _cache = cache;
             Options = options.Value;
         }
 
@@ -58,12 +67,12 @@ namespace Decos.AspNetCore.Authorization.GraphApi
 
             try
             {
-                var claimsIdentity = httpContext.User.Identity as ClaimsIdentity;
-                if (claimsIdentity?.IsAuthenticated != true)
+                var claimsPrincipal = httpContext.User as ClaimsPrincipal;
+                if (claimsPrincipal?.Identity?.IsAuthenticated != true)
                     return true;
 
                 var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(httpContext, Options.RequestedScopes).ConfigureAwait(false);
-                await AddGroupsClaimsAsync(claimsIdentity, accessToken, cancellationToken).ConfigureAwait(false);
+                await AddGroupsClaimsAsync(claimsPrincipal, accessToken, cancellationToken).ConfigureAwait(false);
                 return true;
             }
             catch (MsalUiRequiredException ex)
@@ -73,9 +82,16 @@ namespace Decos.AspNetCore.Authorization.GraphApi
             }
         }
 
-        private async Task AddGroupsClaimsAsync(ClaimsIdentity claimsIdentity, string accessToken, CancellationToken cancellationToken)
+        private async Task AddGroupsClaimsAsync(ClaimsPrincipal claimsPrincipal, string accessToken, CancellationToken cancellationToken)
         {
-            var groupIds = await GetMemberGroupsAsync(accessToken, cancellationToken).ConfigureAwait(false);
+            var cacheKey = $"{claimsPrincipal.GetObjectId()}:{Options.GroupsClaimType}";
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<string> groupIds))
+            {
+                groupIds = await GetMemberGroupsAsync(accessToken, cancellationToken).ConfigureAwait(false);
+                _cache.Set(cacheKey, groupIds, TimeSpan.FromHours(1));
+            }
+
+            var claimsIdentity = (ClaimsIdentity)claimsPrincipal.Identity;
             foreach (var groupId in groupIds)
                 claimsIdentity.AddClaim(new Claim(Options.GroupsClaimType, groupId));
         }
@@ -85,7 +101,10 @@ namespace Decos.AspNetCore.Authorization.GraphApi
             if (accessToken == null)
                 throw new ArgumentNullException(nameof(accessToken));
 
-            var response = await _graphApiClient.GetMemberGroupsAsync(accessToken, new GetMemberGroupsRequest { SecurityEnabledOnly = Options.SecurityGroupsOnly }, cancellationToken);
+            var response = await _graphApiClient.GetMemberGroupsAsync(
+                accessToken,
+                new GetMemberGroupsRequest { SecurityEnabledOnly = Options.SecurityGroupsOnly },
+                cancellationToken).ConfigureAwait(false);
             return response.Value;
         }
     }
