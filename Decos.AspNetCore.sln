@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Web.SqlT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decos.AspNetCore.Authorization", "src\Decos.AspNetCore.Authorization\Decos.AspNetCore.Authorization.csproj", "{75F68E86-E7AD-4BD5-AE2F-A32D4380A161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.Authorization.Tests", "tests\Decos.AspNetCore.Authorization.Tests\Decos.AspNetCore.Authorization.Tests.csproj", "{7B41C960-3AAC-4C30-89FB-C88606E14FCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decos.AspNetCore.Authorization.Tests", "tests\Decos.AspNetCore.Authorization.Tests\Decos.AspNetCore.Authorization.Tests.csproj", "{7B41C960-3AAC-4C30-89FB-C88606E14FCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.Authentication", "src\Decos.AspNetCore.Authentication\Decos.AspNetCore.Authentication.csproj", "{82A3C150-5F54-40CE-A324-9878A3D17098}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decos.AspNetCore.Authentication.Tests", "tests\Decos.AspNetCore.Authentication.Tests\Decos.AspNetCore.Authentication.Tests.csproj", "{9C30CBA5-DB28-49A3-B44D-29C8C27DEEB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B41C960-3AAC-4C30-89FB-C88606E14FCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A3C150-5F54-40CE-A324-9878A3D17098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A3C150-5F54-40CE-A324-9878A3D17098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A3C150-5F54-40CE-A324-9878A3D17098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A3C150-5F54-40CE-A324-9878A3D17098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C30CBA5-DB28-49A3-B44D-29C8C27DEEB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C30CBA5-DB28-49A3-B44D-29C8C27DEEB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C30CBA5-DB28-49A3-B44D-29C8C27DEEB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C30CBA5-DB28-49A3-B44D-29C8C27DEEB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
