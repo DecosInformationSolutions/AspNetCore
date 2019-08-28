@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Utilities;
 using Xunit;
 
 namespace Decos.AspNetCore.Authentication.Tests
@@ -18,14 +19,30 @@ namespace Decos.AspNetCore.Authentication.Tests
     public class RequestSignatureTests
     {
         [Fact]
-        public async Task RequestWithoutSignatureIsNotAuthenticated()
+        public async Task AnonymousRequestWithoutSignatureIsOK()
         {
-            var server = CreateServer();
+            var server = CreateServer(allowAnonymous: true);
             var response = await SendAsync(server, "GET", "/", null);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        private TestServer CreateServer(bool challenge = false)
+        [Fact]
+        public async Task RequestWithoutSignatureIsUnauthorized()
+        {
+            var server = CreateServer();
+            var response = await SendAsync(server, "GET", "/", null);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task RequestWithoutSignatureContainsChallenge()
+        {
+            var server = CreateServer();
+            var response = await SendAsync(server, "GET", "/", null);
+            response.Headers.WwwAuthenticate.Should().NotBeNullOrEmpty();
+        }
+
+        private TestServer CreateServer(bool allowAnonymous = false)
         {
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -33,7 +50,7 @@ namespace Decos.AspNetCore.Authentication.Tests
                     app.UseAuthentication();
                     app.Use(async (context, next) =>
                     {
-                        if (challenge && context.User?.Identity?.IsAuthenticated != true)
+                        if (!allowAnonymous && context.User?.Identity?.IsAuthenticated != true)
                         {
                             await context.ChallengeAsync();
                             return;
