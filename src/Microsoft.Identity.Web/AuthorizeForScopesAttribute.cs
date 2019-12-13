@@ -1,30 +1,50 @@
-using System.Collections.Generic;
-using System.Linq;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Microsoft.Identity.Web.Client
+namespace Microsoft.Identity.Web
 {
+    // TODO: rename to EnsureScopesAttribute ? or MsalAuthorizeForScopesAttribute  or AuthorizeForScopesAttribute
+
     /// <summary>
     /// Filter used on a controller action to trigger an incremental consent.
     /// </summary>
     /// <example>
-    /// The following controller action will trigger 
+    /// The following controller action will trigger
     /// <code>
-    /// [MsalUiRequiredExceptionFilter(Scopes = new[] {"Mail.Send"})]
-    /// public async Task<IActionResult> SendEmail()
+    /// [AuthorizeForScopes(Scopes = new[] {"Mail.Send"})]
+    /// public async Task&lt;IActionResult&gt; SendEmail()
     /// {
     /// }
     /// </code>
     /// </example>
-    public class MsalUiRequiredExceptionFilterAttribute : ExceptionFilterAttribute
+    public class AuthorizeForScopesAttribute : ExceptionFilterAttribute
     {
+        /// <summary>
+        /// Scopes to request
+        /// </summary>
         public string[] Scopes { get; set; }
-        
+
+        /// <summary>
+        /// Key section on the configuration file that holds the scope value
+        /// </summary>
+        public string ScopeKeySection { get; set; }
+
+        /// <summary>
+        /// Handles the MsaUiRequiredExeception
+        /// </summary>
+        /// <param name="context">Context provided by ASP.NET Core</param>
         public override void OnException(ExceptionContext context)
         {
             MsalUiRequiredException msalUiRequiredException = context.Exception as MsalUiRequiredException;
@@ -33,19 +53,38 @@ namespace Microsoft.Identity.Web.Client
                 msalUiRequiredException = context.Exception?.InnerException as MsalUiRequiredException;
             }
 
-            if (msalUiRequiredException!=null)
+            if (msalUiRequiredException != null)
             {
                 if (CanBeSolvedByReSignInUser(msalUiRequiredException))
                 {
-                    var properties =
-                        BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
+                    // the users cannot provide both scopes and ScopeKeySection at the same time
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection) && Scopes != null && Scopes.Length > 0)
+                    {
+                        throw new InvalidOperationException($"Either provide the '{nameof(ScopeKeySection)}' or the '{nameof(Scopes)}' to the 'AuthorizeForScopes'.");
+                    }
+
+                    // If the user wishes us to pick the Scopes from a particular config setting.
+                    if (!string.IsNullOrWhiteSpace(ScopeKeySection))
+                    {
+                        // Load the injected IConfiguration
+                        IConfiguration configuration = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+
+                        if (configuration == null)
+                        {
+                            throw new InvalidOperationException($"The {nameof(ScopeKeySection)} is provided but the IConfiguration instance is not present in the services collection");
+                        }
+
+                        Scopes = new string[] { configuration.GetValue<string>(ScopeKeySection) };
+                    }
+
+                    var properties = BuildAuthenticationPropertiesForIncrementalConsent(Scopes, msalUiRequiredException, context.HttpContext);
                     context.Result = new ChallengeResult(properties);
                 }
             }
-            
+
             base.OnException(context);
         }
-        
+
         private bool CanBeSolvedByReSignInUser(MsalUiRequiredException ex)
         {
             // ex.ErrorCode != MsalUiRequiredException.UserNullError indicates a cache problem.
@@ -54,14 +93,14 @@ namespace Microsoft.Identity.Web.Client
             // InMemoryCache, the cache could be empty if the server was restarted. This is why
             // the null_user exception is thrown.
 
-            return ex.ErrorCode == MsalError.UserNullError;
+            return ex.ErrorCode.ContainsAny(new [] { MsalError.UserNullError, MsalError.InvalidGrantError });
         }
 
         /// <summary>
         /// Build Authentication properties needed for an incremental consent.
         /// </summary>
         /// <param name="scopes">Scopes to request</param>
-        /// <param name="ex">ui is present</param>
+        /// <param name="ex">MsalUiRequiredException instance</param>
         /// <param name="context">current http context in the pipeline</param>
         /// <returns>AuthenticationProperties</returns>
         private AuthenticationProperties BuildAuthenticationPropertiesForIncrementalConsent(

@@ -14,8 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Web.Client;
-
+using Microsoft.Identity.Web;
 using Moq;
 
 using Xunit;
@@ -41,11 +40,11 @@ namespace Decos.AspNetCore.Authorization.Tests
             _httpContext = new DefaultHttpContext();
 
             var identity = new ClaimsIdentity("test");
-            identity.AddClaim(new Claim(Microsoft.Identity.Web.ClaimConstants.ObjectId, UserOid1));
+            identity.AddClaim(new Claim(ClaimConstants.ObjectId, UserOid1));
             _httpContext.User = new ClaimsPrincipal(identity);
 
             _tokenAcquisition = new Mock<ITokenAcquisition>();
-            _tokenAcquisition.Setup(x => x.GetAccessTokenOnBehalfOfUser(_httpContext, It.IsAny<IEnumerable<string>>(), null))
+            _tokenAcquisition.Setup(x => x.GetAccessTokenOnBehalfOfUserAsync(It.IsAny<IEnumerable<string>>(), null))
                 .ReturnsAsync(AccessToken);
 
             _graphApiClient = new Mock<IGraphApiClient>();
@@ -85,7 +84,7 @@ namespace Decos.AspNetCore.Authorization.Tests
         public async Task AddClaimsAsync_WithInvalidAccessToken_ReturnsFalse()
         {
             _httpContext.User = new ClaimsPrincipal(new ClaimsIdentity("test"));
-            _tokenAcquisition.Setup(x => x.GetAccessTokenOnBehalfOfUser(_httpContext, It.IsAny<IEnumerable<string>>(), null))
+            _tokenAcquisition.Setup(x => x.GetAccessTokenOnBehalfOfUserAsync(It.IsAny<IEnumerable<string>>(), null))
                 .ThrowsAsync(new MsalUiRequiredException("test", "test"));
             var handler = new GraphApiClaimsHandler(_tokenAcquisition.Object, _graphApiClient.Object, _memoryCache, _options.Object);
 
