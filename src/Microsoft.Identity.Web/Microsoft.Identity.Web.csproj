@@ -1,13 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 
-    <!--This should be passed from the VSTS build-->
-    <ClientSemVer Condition="'$(ClientSemVer)' == ''">1.0.0-localbuild</ClientSemVer>
-    <!--This will generate AssemblyVersion, AssemblyFileVersion and AssemblyInformationVersion-->
     <Version>3.1</Version>
 
     <DefineConstants>$(DefineConstants);WEB</DefineConstants>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
     <Description>This package enables ASP.NET Core Web apps and Web APIs to use the Microsoft identity platform (formerly Azure AD v2.0). When they call Web APIs, MSAL.NET is used to acquire tokens</Description>
@@ -25,14 +21,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
   
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
