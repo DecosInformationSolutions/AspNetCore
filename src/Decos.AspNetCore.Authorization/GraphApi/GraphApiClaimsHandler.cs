@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +9,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client;
-using Microsoft.Identity.Web.Resource;
 
 namespace Decos.AspNetCore.Authorization.GraphApi
 {
@@ -71,13 +67,13 @@ namespace Decos.AspNetCore.Authorization.GraphApi
                 if (claimsPrincipal?.Identity?.IsAuthenticated != true)
                     return true;
 
-                var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUser(httpContext, Options.RequestedScopes).ConfigureAwait(false);
+                var accessToken = await _tokenAcquisition.GetAccessTokenOnBehalfOfUserAsync(Options.RequestedScopes).ConfigureAwait(false);
                 await AddGroupsClaimsAsync(claimsPrincipal, accessToken, cancellationToken).ConfigureAwait(false);
                 return true;
             }
             catch (MsalUiRequiredException ex)
             {
-                _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(httpContext, Options.RequestedScopes, ex);
+                _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(Options.RequestedScopes, ex);
                 return false;
             }
         }

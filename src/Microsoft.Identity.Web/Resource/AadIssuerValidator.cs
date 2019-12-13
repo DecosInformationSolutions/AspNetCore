@@ -1,41 +1,20 @@
-﻿/************************************************************************************************
-The MIT License (MIT)
-
-Copyright (c) 2015 Microsoft Corporation
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-***********************************************************************************************/
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Microsoft.Identity.Web.InstanceDiscovery;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Identity.Web.InstanceDiscovery;
 
 namespace Microsoft.Identity.Web.Resource
 {
     /// <summary>
-    /// Generic class that validates token issuer from the provided Azure AD authority. Use the <see cref="AadIssuerValidatorFactory"/> to create instaces of this class.
+    /// Generic class that validates token issuer from the provided Azure AD authority. Use the <see cref="AadIssuerValidatorFactory"/> to create instances of this class.
     /// </summary>
     public class AadIssuerValidator
     {
@@ -44,16 +23,17 @@ namespace Microsoft.Identity.Web.Resource
 
         // TODO: separate AadIssuerValidator creation logic from the validation logic in order to unit test it
         private static readonly IDictionary<string, AadIssuerValidator> s_issuerValidators = new ConcurrentDictionary<string, AadIssuerValidator>();
+
         private static readonly ConfigurationManager<IssuerMetadata> s_configManager = new ConfigurationManager<IssuerMetadata>(AzureADIssuerMetadataUrl, new IssuerConfigurationRetriever());
 
         /// <summary>
         /// A list of all Issuers across the various Azure AD instances
         /// </summary>
-        private readonly SortedSet<string> _issuerAliases;
+        private readonly ISet<string> _issuerAliases;
 
         internal /* internal for test */ AadIssuerValidator(IEnumerable<string> aliases)
         {
-            _issuerAliases = new SortedSet<string>(aliases);
+            _issuerAliases = new HashSet<string>(aliases, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -77,6 +57,7 @@ namespace Microsoft.Identity.Web.Resource
                 var issuerMetadata = s_configManager.GetConfigurationAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 string authorityHost;
                 try
+
                 {
                     authorityHost = new Uri(aadAuthority).Authority;
                 }
@@ -86,8 +67,11 @@ namespace Microsoft.Identity.Web.Resource
                 }
 
                 // Add issuer aliases of the chosen authority
-                string authority = authorityHost ?? FallbackAuthority;
-                var aliases = issuerMetadata.Metadata.Where(m => m.Aliases.Any(a => a == authority)).SelectMany(m => m.Aliases).Distinct();
+                string authority = authorityHost ?? new Uri(FallbackAuthority).Host;
+                var aliases = issuerMetadata.Metadata
+                    .Where(m => m.Aliases.Any(a => string.Equals(a, authority, StringComparison.OrdinalIgnoreCase)))
+                    .SelectMany(m => m.Aliases)
+                    .Distinct();
                 s_issuerValidators[authority] = new AadIssuerValidator(aliases);
                 return s_issuerValidators[authority];
             }
@@ -121,7 +105,7 @@ namespace Microsoft.Identity.Web.Resource
 
             string tenantId = GetTenantIdFromToken(securityToken);
             if (string.IsNullOrWhiteSpace(tenantId))
-                throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft Identity Platform.");
+                throw new SecurityTokenInvalidIssuerException("Neither `tid` nor `tenantId` claim is present in the token obtained from Microsoft identity platform.");
 
             if (validationParameters.ValidIssuers != null)
                 foreach (var validIssuerTemplate in validationParameters.ValidIssuers)
@@ -143,17 +127,17 @@ namespace Microsoft.Identity.Web.Resource
 
             try
             {
-                var uri = new Uri(validIssuerTemplate.Replace("{tenantid}", tenantId));
+                var issuerFromTemplateUri = new Uri(validIssuerTemplate.Replace("{tenantid}", tenantId));
                 var actualIssuerUri = new Uri(actualIssuer);
 
                 // Template authority is in the aliases
-                return _issuerAliases.Contains(uri.Authority) &&
-                    // "iss" authority matches
-                    string.Equals(uri.Authority, actualIssuerUri.Authority) &&
-                    // Template authority ends in the tenantId
-                    IsValidTidInLocalPath(tenantId, uri) &&
-                    // "iss" ends in the tenantId
-                    IsValidTidInLocalPath(tenantId, actualIssuerUri);
+                return _issuerAliases.Contains(issuerFromTemplateUri.Authority) &&
+                       // "iss" authority is in the aliases
+                       _issuerAliases.Contains(actualIssuerUri.Authority) &&
+                      // Template authority ends in the tenantId
+                      IsValidTidInLocalPath(tenantId, issuerFromTemplateUri) &&
+                      // "iss" ends in the tenantId
+                      IsValidTidInLocalPath(tenantId, actualIssuerUri);
             }
             catch
             {
@@ -182,7 +166,7 @@ namespace Microsoft.Identity.Web.Resource
             }
 
             // brentsch - todo, TryGetPayloadValue is available in 5.5.0
-            if (securityToken is JsonWebToken  jsonWebToken)
+            if (securityToken is JsonWebToken jsonWebToken)
             {
                 var tid = jsonWebToken.GetPayloadValue<string>(ClaimConstants.Tid);
                 if (tid != null)

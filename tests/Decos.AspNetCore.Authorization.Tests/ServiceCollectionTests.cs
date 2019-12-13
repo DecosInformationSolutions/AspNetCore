@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Decos.AspNetCore.Authorization.GraphApi;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Client.TokenCacheProviders;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Xunit;
 
 namespace Decos.AspNetCore.Authorization.Tests
@@ -29,6 +29,7 @@ namespace Decos.AspNetCore.Authorization.Tests
         {
             var services = new ServiceCollection();
             services.AddTokenAcquisition();
+            services.AddInMemoryTokenCaches();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             services.AddGraphApiClaims();
