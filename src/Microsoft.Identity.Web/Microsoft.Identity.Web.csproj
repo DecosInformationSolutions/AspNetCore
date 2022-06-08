@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 
-    <Version>3.1</Version>
+    <Version>4.0</Version>
 
     <DefineConstants>$(DefineConstants);WEB</DefineConstants>
     <Authors>Microsoft</Authors>
@@ -25,7 +25,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <PackageId>Decos.Microsoft.Identity.Web</PackageId>
-    <PackageReleaseNotes>This package is deployed because there is no official NuGet package available at this time.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated to support .NET 5</PackageReleaseNotes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
