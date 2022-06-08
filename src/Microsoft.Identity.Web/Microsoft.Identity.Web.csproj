@@ -23,7 +23,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackageId>Decos.Microsoft.Identity.Web</PackageId>
     <PackageReleaseNotes>This package is deployed because there is no official NuGet package available at this time.</PackageReleaseNotes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
