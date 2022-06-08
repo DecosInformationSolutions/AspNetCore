@@ -8,8 +8,8 @@
     <Authors>Laura Verdoes</Authors>
     <Company>Decos Information Solutions</Company>
     <Description>Provides additional authorization functionality to ASP.NET Core, such as adding group claims based on a Graph API call.</Description>
-    <Version>2.0.0</Version>
-    <PackageReleaseNotes>Updated to support .NET Core 3.1</PackageReleaseNotes>
+    <Version>3.0.0</Version>
+    <PackageReleaseNotes>Updated to support .NET 5</PackageReleaseNotes>
   </PropertyGroup>
   
   <PropertyGroup>
