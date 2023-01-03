@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
@@ -15,10 +16,11 @@ namespace Microsoft.Identity.Web.TokenCacheProviders.InMemory
         /// <param name="cacheOptions">The MSALMemoryTokenCacheOptions allows the caller to set the token cache expiration</param>
         /// <returns></returns>
         public static IServiceCollection AddInMemoryTokenCaches(
-            this IServiceCollection services)
-        {
+            this IServiceCollection services, IConfiguration configuration)
+        {      
             services.AddMemoryCache();
             services.AddHttpContextAccessor();
+            services.Configure<MsalMemoryTokenCacheOptions>(configuration.GetSection("MsalMemoryTokenCacheOptions"));
             services.AddSingleton<IMsalTokenCacheProvider, MsalMemoryTokenCacheProvider>();
             return services;
         }
