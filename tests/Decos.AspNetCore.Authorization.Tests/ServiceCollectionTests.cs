@@ -29,7 +29,7 @@ namespace Decos.AspNetCore.Authorization.Tests
         {
             var services = new ServiceCollection();
             services.AddTokenAcquisition();
-            services.AddInMemoryTokenCaches();
+            services.AddInMemoryTokenCaches(new ConfigurationBuilder().Build());
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             services.AddGraphApiClaims();
